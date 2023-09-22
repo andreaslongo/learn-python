@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# See more keys and their definitions at https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
+
+[project]
+name = "web_server"
+version = "0.1.0"
+classifiers = ["Private :: Do Not Upload"]
+
+[project.optional-dependencies]
+test = ["pytest"]
+lint = ["black", "ruff"]
+
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib"]
+
+[tool.ruff]
+# Enable flake8-bugbear (`B`) rules.
+select = ["E", "F", "B"]
+
+# Never enforce `E501` (line length violations).
+ignore = ["E501"]
+
+# Avoid trying to fix flake8-bugbear (`B`) violations.
+unfixable = ["B"]
