@@ -11,7 +11,7 @@ classifiers = ["Private :: Do Not Upload"]
 
 [project.optional-dependencies]
 test = ["pytest"]
-lint = ["black", "ruff"]
+lint = ["black", "ruff; platform_machine != 'aarch64'"]
 
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib"]
