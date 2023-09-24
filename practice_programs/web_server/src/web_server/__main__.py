@@ -8,10 +8,15 @@ def main():
         s.bind(("0.0.0.0", 7878))
         s.listen()
         while True:
-            s.accept()
-            buffer = s.makefile()
-            s.recv_into(buffer)
+            c, _ = s.accept()
             print("Connection established!")
+            rfile = c.makefile(mode="rb", buffering=-1)
+            for line in rfile:
+                print(line)
+                if line == b"\r\n":
+                    print("close")
+                    c.shutdown(socket.SHUT_RDWR)
+                    c.close()
 
 
 if __name__ == "__main__":
