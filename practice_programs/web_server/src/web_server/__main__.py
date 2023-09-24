@@ -12,10 +12,12 @@ Request: [
 
 """
 Connection established!
-b'GET / HTTP/1.1\r\n'
-b'Host: localhost:8002\r\n'
-b'User-Agent: curl/8.0.1\r\n'
-b'Accept: */*\r\n'
+Request:
+[   b'GET / HTTP/1.1\r\n',
+    b'Host: localhost:8002\r\n',
+    b'User-Agent: curl/8.0.1\r\n',
+    b'Accept: */*\r\n']
+
 """
 
 # TODO: Clean shutdown after CTRL+C
@@ -25,6 +27,7 @@ OSError: [Errno 98] Address already in use
 
 import socket
 import io
+from pprint import pprint
 
 def main():
     with socket.socket() as s:
@@ -34,12 +37,15 @@ def main():
             c, _ = s.accept()
             print("Connection established!")
             rfile = c.makefile(mode="rb", buffering=-1)
+            http_request = []
             for line in rfile:
                 if line == b"\r\n":
                     c.shutdown(socket.SHUT_RDWR)
                     c.close()
                 else:
-                    print(line)
+                    http_request.append(line)
+            print("Request:")
+            pprint(http_request, indent=4)
 
 
 if __name__ == "__main__":
