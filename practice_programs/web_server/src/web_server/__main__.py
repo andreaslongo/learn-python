@@ -1,5 +1,9 @@
 # https://docs.python.org/3/howto/sockets.html
 
+import socket
+from pathlib import Path
+from pprint import pprint
+
 """
 Connection established!
 Request: [
@@ -25,9 +29,6 @@ Request:
 OSError: [Errno 98] Address already in use
 """
 
-import socket
-import io
-from pprint import pprint
 
 def main():
     with socket.socket() as s:
@@ -36,16 +37,31 @@ def main():
         while True:
             c, _ = s.accept()
             print("Connection established!")
-            rfile = c.makefile(mode="rb", buffering=-1)
-            http_request = []
-            for line in rfile:
-                if line == b"\r\n":
-                    c.shutdown(socket.SHUT_RDWR)
-                    c.close()
-                else:
-                    http_request.append(line)
-            print("Request:")
-            pprint(http_request, indent=4)
+            handle_connection(c)
+
+
+def handle_connection(c):
+    rfile = c.makefile(mode="rb", buffering=-1)
+    http_request = []
+    for line in rfile:
+        if line == b"\r\n":
+            status_line = "HTTP/1.1 200 OK"
+            contents = Path("hello.html").read_text()
+            length = len(contents)
+
+            response = (
+                f"{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}".encode()
+            )
+
+            wfile = c.makefile(mode="wb", buffering=0)
+            wfile.write(response)
+            c.shutdown(socket.SHUT_RDWR)
+            c.close()
+        else:
+            http_request.append(line.decode().strip())
+
+    print("Request:")
+    pprint(http_request, indent=4)
 
 
 if __name__ == "__main__":
