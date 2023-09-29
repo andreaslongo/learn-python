@@ -41,20 +41,36 @@ def main():
 
 
 def handle_connection(c):
+    # https://docs.python.org/3/library/io.html#module-io
     rfile = c.makefile(mode="rb", buffering=-1)
+    # print_request(rfile)
+    request_line = rfile.readline().decode().strip()
+
+    if request_line == 'GET / HTTP/1.1':
+        status_line = "HTTP/1.1 200 OK"
+        filename = "hello.html"
+    else:
+        status_line = "HTTP/1.1 404 NOT FOUND"
+        filename = "404.html"
+
+    contents = Path(filename).read_text()
+    length = len(contents)
+
+    response = (
+        f"{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}".encode()
+    )
+
+    wfile = c.makefile(mode="wb", buffering=0)
+    wfile.write(response)
+
+    c.shutdown(socket.SHUT_RDWR)
+    c.close()
+
+
+def print_request(stream):
     http_request = []
     for line in rfile:
         if line == b"\r\n":
-            status_line = "HTTP/1.1 200 OK"
-            contents = Path("hello.html").read_text()
-            length = len(contents)
-
-            response = (
-                f"{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}".encode()
-            )
-
-            wfile = c.makefile(mode="wb", buffering=0)
-            wfile.write(response)
             c.shutdown(socket.SHUT_RDWR)
             c.close()
         else:
