@@ -4,26 +4,6 @@ import socket
 from pathlib import Path
 from pprint import pprint
 
-"""
-Connection established!
-Request: [
-    "GET / HTTP/1.1",
-    "Host: localhost:8001",
-    "User-Agent: curl/8.0.1",
-    "Accept: */*",
-]
-"""
-
-"""
-Connection established!
-Request:
-[   b'GET / HTTP/1.1\r\n',
-    b'Host: localhost:8002\r\n',
-    b'User-Agent: curl/8.0.1\r\n',
-    b'Accept: */*\r\n']
-
-"""
-
 # TODO: Clean shutdown after CTRL+C
 """
 OSError: [Errno 98] Address already in use
