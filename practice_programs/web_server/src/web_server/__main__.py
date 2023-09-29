@@ -3,15 +3,14 @@
 import socket
 from pathlib import Path
 from pprint import pprint
+import time
 
-# TODO: Clean shutdown after CTRL+C
-"""
-OSError: [Errno 98] Address already in use
-"""
 
 
 def main():
-    with socket.socket() as s:
+    # We set socket.SO_REUSEADDR to avoid: "OSError: [Errno 98] Address already
+    # in use" after ending with CTRL+C.
+    with socket.socket(socket.SO_REUSEADDR) as s:
         s.bind(("0.0.0.0", 7878))
         s.listen()
         while True:
@@ -27,6 +26,10 @@ def handle_connection(c):
     request_line = rfile.readline().decode().strip()
 
     if request_line == 'GET / HTTP/1.1':
+        status_line = "HTTP/1.1 200 OK"
+        filename = "hello.html"
+    elif request_line == 'GET /sleep HTTP/1.1':
+        time.sleep(5)
         status_line = "HTTP/1.1 200 OK"
         filename = "hello.html"
     else:
