@@ -21,6 +21,10 @@ def main():
         print("Connection established!")
         Thread(target=handle_connection, args=[c]).start()
 
+        # This leads to linter error:
+        # B023 Function definition does not bind loop variable `c`
+        # Thread(target=lambda: handle_connection(c)).start()
+
 
 def handle_connection(stream):
     # https://docs.python.org/3/library/io.html#module-io
