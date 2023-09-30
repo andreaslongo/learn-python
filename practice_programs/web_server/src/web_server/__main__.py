@@ -8,22 +8,22 @@ from threading import Thread
 
 
 def main():
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # We set socket flag "SO_REUSEADDR", in order to prevent
     # "OSError: [Errno 98] Address already in use".
     # https://docs.python.org/3/library/socket.html#example
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    s.bind(("0.0.0.0", 7878))
-    s.listen()
+    listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    listener.bind(("0.0.0.0", 7878))
+    listener.listen()
 
     while True:
-        c, _ = s.accept()
+        stream, _ = listener.accept()
         print("Connection established!")
-        Thread(target=handle_connection, args=[c]).start()
+        Thread(target=handle_connection, args=[stream]).start()
 
         # This leads to linter error:
-        # B023 Function definition does not bind loop variable `c`
-        # Thread(target=lambda: handle_connection(c)).start()
+        # B023 Function definition does not bind loop variable `stream`
+        # Thread(target=lambda: handle_connection(stream)).start()
 
 
 def handle_connection(stream):
