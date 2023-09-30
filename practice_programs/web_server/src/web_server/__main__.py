@@ -6,6 +6,8 @@ from pprint import pprint
 import time
 from threading import Thread
 
+from lib import ThreadPool
+
 
 def main():
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -16,10 +18,14 @@ def main():
     listener.bind(("0.0.0.0", 7878))
     listener.listen()
 
+    pool = ThreadPool(4)
+
     while True:
         stream, _ = listener.accept()
         print("Connection established!")
-        Thread(target=handle_connection, args=[stream]).start()
+
+        # Thread(target=handle_connection, args=[stream]).start()
+        pool.execute(lambda: handle_connection(stream))
 
         # This leads to linter error:
         # B023 Function definition does not bind loop variable `stream`
