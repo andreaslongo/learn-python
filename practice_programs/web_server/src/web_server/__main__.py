@@ -4,7 +4,6 @@ import socket
 from pathlib import Path
 from pprint import pprint
 import time
-from threading import Thread
 
 from lib import ThreadPool
 
@@ -22,14 +21,18 @@ def main():
 
     while True:
         stream, _ = listener.accept()
+
         print("Connection established!")
 
-        # Thread(target=handle_connection, args=[stream]).start()
-        pool.execute(lambda: handle_connection(stream))
+        # We keep the API close to the threading module and don't use closures
+        # (see below)
+        pool.execute(target=handle_connection, args=[stream])
 
-        # This leads to linter error:
-        # B023 Function definition does not bind loop variable `stream`
-        # Thread(target=lambda: handle_connection(stream)).start()
+        # Closures alternative
+        # We need defaults to reference loop variables when creating functions
+        # inside loops. Otherwise, variables will bind only to the final loop
+        # value.
+        # pool.execute(lambda stream=stream: handle_connection(stream))
 
 
 def handle_connection(stream):
