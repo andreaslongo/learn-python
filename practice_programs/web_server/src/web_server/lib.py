@@ -9,7 +9,6 @@ class ThreadPool:
 
     The constructor will fail if the size is zero.
     """
-
     def __init__(self, size):
         assert size > 0
 
@@ -18,6 +17,13 @@ class ThreadPool:
 
         for idx in range(0, size):
             self.workers.append(Worker(idx, self.channel))
+
+    def __del__(self):
+        del self.channel
+
+        for worker in self.workers:
+            print(f"Shutting down worker {worker.id}")
+            worker.thread.join()
 
     def execute(self, target, args):
         self.channel.put((target, args))
@@ -30,12 +36,18 @@ class ThreadPool:
 class Worker:
     def __init__(self, idx, channel):
         self.id = idx
-        self.thread = Thread(target=self._work, args=[channel]).start()
+        self.thread = Thread(target=self.run, args=[channel])
+        self.thread.start()
 
-    def _work(self, channel):
+    def run(self, channel):
         while True:
-            target, args = channel.get()
-            # job = channel.get()  # Closure alternative
+            try:
+                target, args = channel.get()
+                # job = channel.get()  # Closure alternative
+            except:
+                print(f"Worker {self.id} disconnected; shutting down.")
+                break
+
             print(f"Worker {self.id} got a job; executing.")
             target(*args)
             # job()  # Closure alternative

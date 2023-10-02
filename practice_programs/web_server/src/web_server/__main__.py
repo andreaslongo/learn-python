@@ -19,10 +19,12 @@ def main():
 
     pool = ThreadPool(4)
 
-    while True:
+    request_count = 0
+    while request_count < 2:
         stream, _ = listener.accept()
 
         print("Connection established!")
+        request_count += 1
 
         # We keep the API close to the threading module and don't use closures
         # (see below)
