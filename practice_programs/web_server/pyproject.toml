@@ -10,13 +10,14 @@ version = "0.1.0"
 classifiers = ["Private :: Do Not Upload"]
 
 [project.optional-dependencies]
-test = ["pytest"]
-lint = ["black", "ruff; platform_machine != 'aarch64'"]
+test = ["pytest", "pytest-cov", "hypothesis"]
+lint = ["ruff; platform_machine != 'aarch64'"]
 
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib"]
+markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
 
-[tool.ruff]
+[tool.ruff.lint]
 # Enable flake8-bugbear (`B`) rules.
 select = ["E", "F", "B"]
 

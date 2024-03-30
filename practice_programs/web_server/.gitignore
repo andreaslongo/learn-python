@@ -1,7 +1,6 @@
 # https://github.com/github/gitignore/blob/main/Python.gitignore
 # Commit: 8e67b94
 
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
