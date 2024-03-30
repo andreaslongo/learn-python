@@ -24,11 +24,19 @@ USER appuser
 WORKDIR /home/appuser
 
 # Install Python tools
+# Use this to make the container smaller:
+#    pip...  --no-cache-dir \
+#    && rm -rf $(python -m pip cache dir) \
 RUN set -o errexit \
     set -o nounset \
     set -o pipefail \
     set -o xtrace \
-    && python -m pip install --user pipx \
+    && python -m pip install \
+        --disable-pip-version-check \
+        --upgrade \
+        --user \
+            pipx \
+    && python -m pip check \
     && python -m pipx ensurepath \
     && python -m pipx run nox --version
 
